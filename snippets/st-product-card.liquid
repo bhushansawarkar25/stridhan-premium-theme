@@ -1,0 +1,10 @@
+<a class="st-product-card" href="{{ product.url }}">
+  <span class="st-product-card__image">
+    {%- if product.featured_media != blank -%}
+      {{ product.featured_media | image_url: width: 520 | image_tag: loading: 'lazy', widths: '180, 260, 360, 520', alt: product.featured_media.alt | default: product.title }}
+    {%- endif -%}
+  </span>
+  <span class="st-product-card__title">{{ product.title }}</span>
+  <span class="st-product-card__stars">★★★★★</span>
+  <span class="st-product-card__price">{{ product.price | money }}</span>
+</a>
