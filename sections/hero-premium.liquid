@@ -1,0 +1,162 @@
+{{ 'stridhan-theme.css' | asset_url | stylesheet_tag }}
+{{ 'stridhan-components.css' | asset_url | stylesheet_tag }}
+{{ 'stridhan-responsive.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign featured_collection = section.settings.featured_collection
+  assign best_seller_collection = section.settings.best_seller_collection
+-%}
+
+<div class="st-page">
+  <section class="st-hero" aria-label="{{ section.settings.hero_heading | strip_html | escape }}">
+    <div class="st-hero__grid">
+      <div class="st-hero__content">
+        {%- if section.settings.hero_kicker != blank -%}<div class="st-kicker">{{ section.settings.hero_kicker }}</div>{%- endif -%}
+        <h1 class="st-hero__title">{{ section.settings.hero_heading }}</h1>
+        <span class="st-hero__rule" aria-hidden="true"></span>
+        {%- if section.settings.hero_text != blank -%}<p class="st-hero__copy">{{ section.settings.hero_text }}</p>{%- endif -%}
+        <div class="st-hero__actions">
+          {%- if section.settings.primary_label != blank -%}<a class="st-button st-button--primary" href="{{ section.settings.primary_link }}">{{ section.settings.primary_label }}</a>{%- endif -%}
+          {%- if section.settings.secondary_label != blank -%}<a class="st-button st-button--secondary" href="{{ section.settings.secondary_link }}">{{ section.settings.secondary_label }}</a>{%- endif -%}
+        </div>
+        <div class="st-hero__proof" aria-label="Store highlights">
+          <div class="st-proof"><span class="st-proof__icon">{% render 'st-icon', icon: 'star' %}</span><span><span class="st-proof__strong">{{ section.settings.rating_text }}</span><span class="st-proof__small">{{ section.settings.rating_subtext }}</span></span></div>
+          <div class="st-proof"><span class="st-proof__icon">{% render 'st-icon', icon: 'users' %}</span><span><span class="st-proof__strong">{{ section.settings.customer_text }}</span><span class="st-proof__small">{{ section.settings.customer_subtext }}</span></span></div>
+          <div class="st-proof"><span class="st-proof__icon">{% render 'st-icon', icon: 'truck' %}</span><span><span class="st-proof__strong">{{ section.settings.shipping_text }}</span><span class="st-proof__small">{{ section.settings.shipping_subtext }}</span></span></div>
+        </div>
+      </div>
+      <div class="st-hero__media">
+        {%- if section.settings.hero_image != blank -%}
+          <picture>
+            {%- if section.settings.hero_mobile_image != blank -%}<source media="(max-width: 760px)" srcset="{{ section.settings.hero_mobile_image | image_url: width: 900 }}">{%- endif -%}
+            {{ section.settings.hero_image | image_url: width: 1500 | image_tag: loading: 'eager', widths: '720, 960, 1200, 1500', alt: section.settings.hero_heading }}
+          </picture>
+        {%- else -%}
+          <div class="st-hero__placeholder" role="img" aria-label="Premium jewellery lifestyle placeholder"></div>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+
+  <section class="st-shell" aria-label="Trust benefits">
+    <div class="st-trust-panel">
+      {%- assign trust_items = 'FREE SHIPPING|On all orders|truck,PREMIUM QUALITY|Finest materials|diamond,SECURE PAYMENT|100% safe and secure|shield,ANTI TARNISH|Long lasting shine|sparkle,EASY RETURNS|Hassle free returns|return' | split: ',' -%}
+      {%- for item in trust_items -%}{%- assign parts = item | split: '|' -%}<div class="st-trust-item">{% render 'st-icon', icon: parts[2] %}<strong>{{ parts[0] }}</strong><span>{{ parts[1] }}</span></div>{%- endfor -%}
+    </div>
+  </section>
+
+  <section class="st-occasion st-shell">
+    <h2 class="st-section-title">{{ section.settings.occasion_heading }}</h2>
+    <div class="st-occasion__grid">
+      {%- for block in section.blocks -%}{%- if block.type == 'occasion' -%}
+        <a class="st-occasion-card" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}{{ block.settings.image | image_url: width: 520 | image_tag: loading: 'lazy', widths: '240, 360, 520', alt: block.settings.title }}{%- else -%}<div class="st-occasion-card__fallback"></div>{%- endif -%}
+          <span>{{ block.settings.title }}</span>
+        </a>
+      {%- endif -%}{%- endfor -%}
+    </div>
+  </section>
+
+  <section class="st-category st-shell">
+    <h2 class="st-section-title">{{ section.settings.category_heading }}</h2>
+    <div class="st-category__grid">
+      {%- for block in section.blocks -%}{%- if block.type == 'category' -%}
+        <a class="st-category-card" href="{{ block.settings.link }}" {{ block.shopify_attributes }}>
+          <span class="st-category-card__image">{%- if block.settings.image != blank -%}{{ block.settings.image | image_url: width: 320 | image_tag: loading: 'lazy', widths: '160, 240, 320', alt: block.settings.title }}{%- else -%}{% render 'st-icon', icon: block.settings.icon %}{%- endif -%}</span>
+          <strong>{{ block.settings.title }}</strong>
+        </a>
+      {%- endif -%}{%- endfor -%}
+    </div>
+  </section>
+
+  <section class="st-featured st-shell">
+    <div class="st-featured__panel">
+      <div class="st-featured__story">
+        {%- if section.settings.featured_image != blank -%}{{ section.settings.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '480, 720, 900', alt: section.settings.featured_title }}{%- else -%}<div class="st-featured__story-fallback"></div>{%- endif -%}
+        <div class="st-featured__copy"><div class="st-kicker">{{ section.settings.featured_kicker }}</div><h3>{{ section.settings.featured_title }}</h3><p>{{ section.settings.featured_text }}</p><a class="st-button st-button--primary" href="{{ section.settings.featured_link }}">{{ section.settings.featured_button }}</a></div>
+      </div>
+      <div class="st-product-grid">
+        {%- if featured_collection != blank and featured_collection.products_count > 0 -%}{%- for product in featured_collection.products limit: 4 -%}{% render 'st-product-card', product: product %}{%- endfor -%}{%- else -%}{%- for i in (1..4) -%}{% render 'st-product-card-placeholder' %}{%- endfor -%}{%- endif -%}
+      </div>
+    </div>
+  </section>
+
+  <section class="st-products st-shell">
+    <div class="st-products__header"><h2 class="st-section-title">{{ section.settings.best_seller_heading }}</h2>{%- if best_seller_collection != blank -%}<a class="st-products__view" href="{{ best_seller_collection.url }}">{{ section.settings.view_all_label }}</a>{%- endif -%}</div>
+    <div class="st-product-grid">{%- if best_seller_collection != blank and best_seller_collection.products_count > 0 -%}{%- for product in best_seller_collection.products limit: 8 -%}{% render 'st-product-card', product: product %}{%- endfor -%}{%- else -%}{%- for i in (1..8) -%}{% render 'st-product-card-placeholder' %}{%- endfor -%}{%- endif -%}</div>
+  </section>
+
+  <section class="st-story-band">
+    {%- if section.settings.story_image != blank -%}{{ section.settings.story_image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '900, 1200, 1800', alt: section.settings.story_heading }}{%- else -%}<div class="st-story-band__fallback"></div>{%- endif -%}
+    <div class="st-shell"><div class="st-story-band__content"><h2>{{ section.settings.story_heading }}</h2><p>{{ section.settings.story_subheading }}</p><a class="st-button st-button--primary" href="{{ section.settings.story_link }}">{{ section.settings.story_button }}</a></div></div>
+  </section>
+
+  <section class="st-reviews st-shell"><h2 class="st-section-title">{{ section.settings.review_heading }}</h2><div class="st-review-grid">
+    {%- for block in section.blocks -%}{%- if block.type == 'review' -%}<article class="st-review" {{ block.shopify_attributes }}><div class="st-review__image">{%- if block.settings.image != blank -%}{{ block.settings.image | image_url: width: 220 | image_tag: loading: 'lazy', widths: '120, 180, 220', alt: block.settings.name }}{%- endif -%}</div><div><strong>{{ block.settings.name }}</strong><span class="st-product-card__stars">★★★★★</span><p>{{ block.settings.quote }}</p><small>{{ block.settings.location }}</small></div></article>{%- endif -%}{%- endfor -%}
+  </div></section>
+
+  <section class="st-instagram st-shell"><div class="st-instagram__header"><h2 class="st-section-title">{{ section.settings.instagram_heading }}</h2><a class="st-instagram__follow" href="{{ section.settings.instagram_link }}">{{ section.settings.instagram_cta }}</a></div><div class="st-instagram__grid">
+    {%- for block in section.blocks -%}{%- if block.type == 'instagram' -%}<a class="st-instagram__tile" href="{{ section.settings.instagram_link }}" {{ block.shopify_attributes }}>{%- if block.settings.image != blank -%}{{ block.settings.image | image_url: width: 360 | image_tag: loading: 'lazy', widths: '180, 240, 360', alt: section.settings.instagram_heading }}{%- endif -%}</a>{%- endif -%}{%- endfor -%}
+  </div></section>
+
+  <section class="st-newsletter st-shell" aria-label="Newsletter signup"><div class="st-newsletter__copy"><span class="st-newsletter__icon">{% render 'st-icon', icon: 'mail' %}</span><div><h3>{{ section.settings.newsletter_heading }}</h3><p>{{ section.settings.newsletter_text }}</p></div></div>{%- form 'customer', id: 'StridhanPremiumNewsletter' -%}<input type="hidden" name="contact[tags]" value="newsletter"><input type="email" name="contact[email]" autocorrect="off" autocapitalize="off" autocomplete="email" placeholder="{{ section.settings.newsletter_placeholder }}" required><button class="st-button st-button--primary" type="submit">{{ section.settings.newsletter_button }}</button>{%- endform -%}</section>
+</div>
+
+{% schema %}
+{
+  "name": "Stridhan premium homepage",
+  "tag": "section",
+  "class": "section-stridhan-premium-homepage",
+  "settings": [
+    {"type":"header","content":"Hero"},
+    {"type":"image_picker","id":"hero_image","label":"Desktop hero image"},
+    {"type":"image_picker","id":"hero_mobile_image","label":"Mobile hero image"},
+    {"type":"text","id":"hero_kicker","label":"Kicker","default":"Premium handcrafted jewellery"},
+    {"type":"text","id":"hero_heading","label":"Heading","default":"Celebrate Every Moment Beautifully."},
+    {"type":"textarea","id":"hero_text","label":"Text","default":"Elegant jewellery inspired by Indian traditions, crafted for today's confident woman."},
+    {"type":"text","id":"primary_label","label":"Primary button label","default":"Shop collection"},
+    {"type":"url","id":"primary_link","label":"Primary button link"},
+    {"type":"text","id":"secondary_label","label":"Secondary button label","default":"Explore new arrivals"},
+    {"type":"url","id":"secondary_link","label":"Secondary button link"},
+    {"type":"text","id":"rating_text","label":"Rating text","default":"4.8"},
+    {"type":"text","id":"rating_subtext","label":"Rating subtext","default":"From 12,000+ reviews"},
+    {"type":"text","id":"customer_text","label":"Customer text","default":"50,000+"},
+    {"type":"text","id":"customer_subtext","label":"Customer subtext","default":"Happy customers"},
+    {"type":"text","id":"shipping_text","label":"Shipping text","default":"Free Shipping"},
+    {"type":"text","id":"shipping_subtext","label":"Shipping subtext","default":"Across India"},
+    {"type":"header","content":"Homepage sections"},
+    {"type":"text","id":"occasion_heading","label":"Occasion heading","default":"Shop by Occasion"},
+    {"type":"text","id":"category_heading","label":"Category heading","default":"Shop by Category"},
+    {"type":"collection","id":"featured_collection","label":"Featured collection"},
+    {"type":"image_picker","id":"featured_image","label":"Featured collection image"},
+    {"type":"text","id":"featured_kicker","label":"Featured kicker","default":"Featured collection"},
+    {"type":"text","id":"featured_title","label":"Featured title","default":"Wedding Collection"},
+    {"type":"textarea","id":"featured_text","label":"Featured text","default":"Crafted to make every celebration unforgettable."},
+    {"type":"text","id":"featured_button","label":"Featured button","default":"Shop collection"},
+    {"type":"url","id":"featured_link","label":"Featured link"},
+    {"type":"collection","id":"best_seller_collection","label":"Best seller collection"},
+    {"type":"text","id":"best_seller_heading","label":"Best seller heading","default":"Best Sellers"},
+    {"type":"text","id":"view_all_label","label":"View all label","default":"View all"},
+    {"type":"image_picker","id":"story_image","label":"Story banner image"},
+    {"type":"text","id":"story_heading","label":"Story heading","default":"Luxury isn't about price."},
+    {"type":"text","id":"story_subheading","label":"Story subheading","default":"It's about how you feel."},
+    {"type":"text","id":"story_button","label":"Story button","default":"Discover our story"},
+    {"type":"url","id":"story_link","label":"Story link"},
+    {"type":"text","id":"review_heading","label":"Review heading","default":"Loved by 50,000+ Women"},
+    {"type":"text","id":"instagram_heading","label":"Instagram heading","default":"From Our Instagram"},
+    {"type":"url","id":"instagram_link","label":"Instagram link"},
+    {"type":"text","id":"instagram_cta","label":"Instagram CTA","default":"Follow @stridhanofficial"},
+    {"type":"text","id":"newsletter_heading","label":"Newsletter heading","default":"Stay Inspired"},
+    {"type":"textarea","id":"newsletter_text","label":"Newsletter text","default":"Get early access to new launches, exclusive offers and styling tips."},
+    {"type":"text","id":"newsletter_placeholder","label":"Newsletter placeholder","default":"Enter your email address"},
+    {"type":"text","id":"newsletter_button","label":"Newsletter button","default":"Subscribe"}
+  ],
+  "blocks": [
+    {"type":"occasion","name":"Occasion card","settings":[{"type":"image_picker","id":"image","label":"Image"},{"type":"text","id":"title","label":"Title","default":"Wedding"},{"type":"url","id":"link","label":"Link"}]},
+    {"type":"category","name":"Category","settings":[{"type":"image_picker","id":"image","label":"Image"},{"type":"select","id":"icon","label":"Fallback icon","default":"diamond","options":[{"value":"diamond","label":"Diamond"},{"value":"sparkle","label":"Sparkle"},{"value":"ring","label":"Ring"}]},{"type":"text","id":"title","label":"Title","default":"Necklaces"},{"type":"url","id":"link","label":"Link"}]},
+    {"type":"review","name":"Review","settings":[{"type":"image_picker","id":"image","label":"Customer image"},{"type":"text","id":"name","label":"Name","default":"Priya Sharma"},{"type":"textarea","id":"quote","label":"Quote","default":"Absolutely loved the quality and finish. It looks even better in real life."},{"type":"text","id":"location","label":"Location","default":"Pune"}]},
+    {"type":"instagram","name":"Instagram image","settings":[{"type":"image_picker","id":"image","label":"Image"}]}
+  ],
+  "presets": [{"name":"Stridhan premium homepage","blocks":[{"type":"occasion","settings":{"title":"Wedding"}},{"type":"occasion","settings":{"title":"Festival"}},{"type":"occasion","settings":{"title":"Office"}},{"type":"occasion","settings":{"title":"Party"}},{"type":"occasion","settings":{"title":"Vacation"}},{"type":"occasion","settings":{"title":"Everyday"}},{"type":"category","settings":{"title":"Necklaces","icon":"diamond"}},{"type":"category","settings":{"title":"Earrings","icon":"sparkle"}},{"type":"category","settings":{"title":"Rings","icon":"ring"}},{"type":"category","settings":{"title":"Bracelets","icon":"sparkle"}},{"type":"category","settings":{"title":"Mangalsutra","icon":"diamond"}},{"type":"review","settings":{"name":"Priya Sharma","location":"Pune"}},{"type":"review","settings":{"name":"Neha Mehta","location":"Bengaluru"}},{"type":"review","settings":{"name":"Ritika Singh","location":"Delhi"}},{"type":"instagram"},{"type":"instagram"},{"type":"instagram"},{"type":"instagram"},{"type":"instagram"},{"type":"instagram"},{"type":"instagram"},{"type":"instagram"}]}]
+}
+{% endschema %}
